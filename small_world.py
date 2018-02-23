@@ -21,8 +21,7 @@ def small_world(n, e, seed):
     for i in range(n-1):
         G[i, i+1] = -1
         if i <= n - 4:
-            ind.append(ind[-1]+n-2-i-1)#??????/-i or -i-1
-            # ind = [ind, ind[-1] + n -2 - i]
+            ind.append(ind[-1]+n-2-i-1)
     G[0, n-1] = -1
     temp = (n**2-3*n)/2
     np.random.seed(seed)
