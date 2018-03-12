@@ -41,7 +41,7 @@ def small_world(n, e, seed):
         G[row, col] = -1
     G = G + G.T
     G += np.diag(-np.sum(G, 0),0)
-    print 'G', G
+    # print 'G', G
 
     k = 0
     for i in range(n-1):
@@ -51,7 +51,8 @@ def small_world(n, e, seed):
                 E[k, i] = 1
                 E[k, j] = -1
                 k = k+1
-    print 'E', E
+    # print 'E', E
+    return G, E
 
 
 
@@ -60,5 +61,5 @@ if __name__ == "__main__":
     n = int(n_str)
     e = int(e_str)
     seed = int(seed_str)
-    print "generage small world (random graph), \nNodes:", n, "Add edges:", e, 'Random seed:', seed
+    print("generage small world (random graph), \nNodes:", n, "Add edges:", e, 'Random seed:', seed)
     small_world(n, e, seed)
