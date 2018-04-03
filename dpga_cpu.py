@@ -6,7 +6,7 @@ import time
 import tensorflow as tf
 import sys
 from small_world import small_world
-
+import pandas as pd
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -26,8 +26,7 @@ def dense_matrix(N, e, n):
     np.random.seed(rank)
     A_i = np.random.randn(m_i, n)
     A_i /= np.sqrt(np.sum(A_i ** 2, 0))
-    if rank % 2 == 0:
-        A_i = A_i * 0.5
+    np.random.seed(rank)
     x_i = np.random.randn(n, 1)
     b_i = np.dot(A_i, x_i) + 1e-2 * np.random.randn(m_i, 1)
     lam = 0.1 * np.max(np.abs(A_i.T.dot(b_i)))
@@ -115,13 +114,16 @@ def dpga_cpu(N, e, n):
         eps_1 = linalg.norm((x_i - xbar_k[:,[k+1]]),2)
         for i in range(d_i):
             eps_1 += linalg.norm((x_j[:,[i]] - xbar_k[:,[k+1]]),2)
-        eps_1 = eps_1/(N*np.sqrt(n))
+        eps_1 = eps_1/((d_i + 1)*np.sqrt(n))
         eps_2 = linalg.norm((xbar_k[:,[k+1]]-xbar_k[:,[k]]),2)/np.sqrt(n)
 
         if eps_1 <= stop1 and eps_2 <= stop2:
             print('elapsed time', time.time() - t0)
-            print('n:', n, 'iterations:', k)
+            print('rank', rank, 'n:', n, 'iterations:', k)
             sys.stdout.flush()
+            if rank == 0:
+                x_dpga = pd.DataFrame(x_i, columns=list('A'))
+                x_dpga.to_csv('x_dpga.csv')
             MPI.Finalize()
 
 if __name__ == "__main__":
@@ -130,5 +132,5 @@ if __name__ == "__main__":
     e = int(e_str)
     n = int(n_str)
     if rank == 0:
-        print "Nodes:", N, "Add edges:", e, 'size n:', n
+        print("Nodes:", N, "Add edges:", e, 'size n:', n)
     dpga_cpu(N, e, n)
