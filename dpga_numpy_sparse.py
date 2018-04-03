@@ -5,7 +5,7 @@ import time
 import sys
 import scipy.sparse as sp
 from small_world import small_world
-
+import pandas as pd
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -30,8 +30,7 @@ def sparse_matrix(N, e, n):
     N_i = A_i.copy()
     N_i.data = N_i.data ** 2
     A_i = A_i * sp.diags([1 / np.sqrt(np.ravel(N_i.sum(axis=0)))], [0])
-    if rank % 2 == 0:
-        A_i = A_i * 0.5
+    np.random.seed(rank)
     x_i = np.random.randn(n, 1)
     np.random.seed(rank)
     b_i = A_i * sp.rand(n, 1, 0.1) + 1e-2 * np.random.randn(m_i, 1)
@@ -103,7 +102,7 @@ def dpga(N, e, n):
         eps_1 = linalg.norm((x_i - xbar_k[:,[k+1]]),2)
         for i in range(d_i):
             eps_1 += linalg.norm((x_j[:,[i]] - xbar_k[:,[k+1]]),2)
-        eps_1 = eps_1/(N*np.sqrt(n))
+        eps_1 = eps_1/((d_i + 1)*np.sqrt(n))
         eps_2 = linalg.norm((xbar_k[:,[k+1]]-xbar_k[:,[k]]),2)/np.sqrt(n)
 
         if eps_1 <= stop1 and eps_2 <= stop2:
@@ -119,5 +118,5 @@ if __name__ == "__main__":
     e = int(e_str)
     n = int(n_str)
     if rank == 0:
-        print "Nodes:", N, "Add edges:", e, 'size n:', n
+        print("Nodes:", N, "Add edges:", e, 'size n:', n)
     dpga(N, e, n)
