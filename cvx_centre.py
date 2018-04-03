@@ -1,6 +1,7 @@
 """
 solve centre Lasso Problem
 for DPGA
+lam_i = 0.1||A*b||_inf
 """
 
 import numpy as np
@@ -8,6 +9,7 @@ import cvxpy as cvx
 import sys
 import time
 import pandas as pd
+from scipy import linalg
 
 
 
@@ -20,8 +22,6 @@ def lasso_dense(n, N):
         np.random.seed(i)
         A_i = np.random.randn(m_i, n_i)
         A_i /= np.sqrt(np.sum(A_i ** 2, 0))
-        if i % 2 == 0:
-            A_i = A_i*0.5
         np.random.seed(i)
         x_i = np.random.randn(n_i, 1)
         np.random.seed(i)
@@ -36,9 +36,10 @@ def run_cvx(x, obj):
     t0 = time.time()
     prob.solve()
     print "solve_time: %.2f secs" % (time.time() - t0)
-    x_cvx = pd.DataFrame(x.value, columns=list('A'))
-    x_cvx.to_csv('x_cvx.csv')
-    print "objective: ", obj.value
+    print 'obj', obj.value
+    # x_cvx = x.value
+    # x_cvx = pd.DataFrame(x_cvx, columns=list('A'))
+    # x_cvx.to_csv('x_cvx.csv')
 
 
 
@@ -46,7 +47,7 @@ if __name__ == "__main__":
     _, n_str, N_str = sys.argv
     n = int(n_str)
     N = int(N_str)
-    print "running cvx to solve centre problem, \nn=", n, 'N=', N
+    print "running cvx to solve central problem, \nn=", n, 'N=', N
     run_cvx(*lasso_dense(n, N))
 
 
