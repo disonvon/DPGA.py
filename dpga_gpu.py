@@ -26,13 +26,12 @@ def dense_matrix(N, e, n):
     np.random.seed(rank)
     A_i = np.random.randn(m_i, n)
     A_i /= np.sqrt(np.sum(A_i ** 2, 0))
-    if rank % 2 == 0:
-        A_i = A_i * 0.5
+    np.random.seed(rank)
     x_i = np.random.randn(n, 1)
     b_i = np.dot(A_i, x_i) + 1e-2 * np.random.randn(m_i, 1)
     lam = 0.1 * np.max(np.abs(A_i.T.dot(b_i)))
     l_i = (linalg.norm(A_i, 2)) ** 2  # ||A_i||_2^2
-    K = 1000  # number of iterations
+    K = 2000  # number of iterations
     gamma_i = np.sqrt((2.6 * N) / (edges * d_min))
     c_i = (l_i + gamma_i * d_i) ** (-1)
     gamma_ii = 0
@@ -45,20 +44,37 @@ def dense_matrix(N, e, n):
 
 def graph_gpu(A_i, lam, c_i, b_i, n_i):
     from tensorflow.python.framework import ops
-    ops.reset_default_graph()
-    with tf.device('/gpu:0'):
-        A_i_t = tf.constant(A_i, dtype=tf.float64)
-        lam_t = tf.constant(lam, dtype=tf.float64)
-        b_i_t = tf.constant(b_i, dtype=tf.float64)
-        c_i_t = tf.constant(c_i, dtype=tf.float64)
-        zeros = tf.zeros((1, 1),dtype=tf.float64)
-        p = tf.placeholder(dtype=tf.float64, shape=[n_i, 1])
-        s = tf.placeholder(dtype=tf.float64, shape=[n_i, 1])
-        x = tf.placeholder(dtype=tf.float64, shape=[n_i, 1])
-        temp = tf.matmul(A_i_t, x) - b_i_t
-        xbar_i = x - c_i_t * (p + s + tf.matmul(A_i_t, temp, transpose_a=True))
-        prox = tf.multiply(tf.sign(xbar_i), tf.maximum(zeros, tf.abs(xbar_i) - lam_t * c_i_t))
-        return prox, p, s, x
+    if rank % 2 == 0:
+        ops.reset_default_graph()
+        with tf.device('/gpu:0'):
+            A_i_t = tf.constant(A_i, dtype=tf.float64)
+            lam_t = tf.constant(lam, dtype=tf.float64)
+            b_i_t = tf.constant(b_i, dtype=tf.float64)
+            c_i_t = tf.constant(c_i, dtype=tf.float64)
+            zeros = tf.zeros((1, 1),dtype=tf.float64)
+            p = tf.placeholder(dtype=tf.float64, shape=[n_i, 1])
+            s = tf.placeholder(dtype=tf.float64, shape=[n_i, 1])
+            x = tf.placeholder(dtype=tf.float64, shape=[n_i, 1])
+            temp = tf.matmul(A_i_t, x) - b_i_t
+            xbar_i = x - c_i_t * (p + s + tf.matmul(A_i_t, temp, transpose_a=True))
+            prox = tf.multiply(tf.sign(xbar_i), tf.maximum(zeros, tf.abs(xbar_i) - lam_t * c_i_t))
+            return prox, p, s, x
+    else:
+        ops.reset_default_graph()
+        with tf.device('/gpu:1'):
+            A_i_t = tf.constant(A_i, dtype=tf.float64)
+            lam_t = tf.constant(lam, dtype=tf.float64)
+            b_i_t = tf.constant(b_i, dtype=tf.float64)
+            c_i_t = tf.constant(c_i, dtype=tf.float64)
+            zeros = tf.zeros((1, 1), dtype=tf.float64)
+            p = tf.placeholder(dtype=tf.float64, shape=[n_i, 1])
+            s = tf.placeholder(dtype=tf.float64, shape=[n_i, 1])
+            x = tf.placeholder(dtype=tf.float64, shape=[n_i, 1])
+            temp = tf.matmul(A_i_t, x) - b_i_t
+            xbar_i = x - c_i_t * (p + s + tf.matmul(A_i_t, temp, transpose_a=True))
+            prox = tf.multiply(tf.sign(xbar_i), tf.maximum(zeros, tf.abs(xbar_i) - lam_t * c_i_t))
+            return prox, p, s, x
+
 
 def sess_run(sess, prox, p, s, x, pi, si, x_i):
     x_i = sess.run(prox, feed_dict={p: pi, s: si, x: x_i})
@@ -115,7 +131,7 @@ def dpga_gpu(N, e, n):
         eps_1 = linalg.norm((x_i - xbar_k[:,[k+1]]),2)
         for i in range(d_i):
             eps_1 += linalg.norm((x_j[:,[i]] - xbar_k[:,[k+1]]),2)
-        eps_1 = eps_1/(N*np.sqrt(n))
+        eps_1 = eps_1/((d_i + 1)*np.sqrt(n))
         eps_2 = linalg.norm((xbar_k[:,[k+1]]-xbar_k[:,[k]]),2)/np.sqrt(n)
 
         if eps_1 <= stop1 and eps_2 <= stop2:
@@ -130,5 +146,5 @@ if __name__ == "__main__":
     e = int(e_str)
     n = int(n_str)
     if rank == 0:
-        print "Nodes:", N, "Add edges:", e, 'size n:', n
+        print("Nodes:", N, "Add edges:", e, 'size n:', n)
     dpga_gpu(N, e, n)
