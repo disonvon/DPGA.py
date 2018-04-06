@@ -28,9 +28,15 @@ where the number after "-np " is the numer of parallel MPI processes to be start
 Set up VM (Virtual Machine) instance on Google Cloud Engine:
 
 Step 1: Visit Google Cloud Platform and click Compute Engine with a Google account;
+
 Step 2: Click CREATE INSTANCE button (every new user will have $ 300 free trial for one year);
+
 Step 3: Customize what kind of machine you need (Name, Machine Zone, #cores/cpus, memory, gpus, Boot disk (Linux, Centos, Windows) and storage size);
+
 Step 4: Connect to your VM instance via SSH/RDP with your dynamic External IP, User ID, password;
+
 Step 5: Set up the libraries/packages/software you need;
+
 Step 5: Test your code in prompt command window;
+
 PS: You can edit your instance size (#cpu/memory/gpu) whnever you need 
