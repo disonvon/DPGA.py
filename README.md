@@ -17,6 +17,7 @@ https://www.tensorflow.org/install/install_windows
 
 Some other libraries/packages needed are: NumPy, scipy
 
+
 === How to generate multiple processes on a single (multi-core/cpu) host ===
 Run it with 
 
@@ -25,7 +26,7 @@ mpirun -np N ./some-program
 where the number after "-np " is the numer of parallel MPI processes to be started.
 
 
-Set up VM (Virtual Machine) instance on Google Cloud Engine:
+===   Set up VM (Virtual Machine) instance on Google Cloud Engine ===
 
 Step 1: Visit Google Cloud Platform and click Compute Engine with a Google account;
 
