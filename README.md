@@ -7,13 +7,13 @@ This repository contains the code that produces the numeric section in On the Us
 Python 3.5
 
 
-mpi4py (Version == 3.0)(Windows):
+mpi4py (Version == 3.0)(Windows system in this example):
 
 The mpi4py documentation and installation instructions can be found at:
 
 http://mpi4py.scipy.org/
 
-TensorFlow-gpu (Windows):
+TensorFlow-gpu (Windows version in this example):
 
 
 The TensorFlow-gpu documentation and installation instructions can be found at:
@@ -37,13 +37,13 @@ where the number after "-np " is the numer of parallel MPI processes to be start
 
 Step 1: Visit Google Cloud Platform and click Compute Engine with a Google account;
 
-Step 2: Click CREATE INSTANCE button (every new user will have $ 300 free trial for one year);
+Step 2: Click CREATE INSTANCE button (every new user will have $ 300 free trial for one year at present);
 
 Step 3: Customize what kind of machine you need (Name, Machine Zone, #cores/cpus, memory, gpus, Boot disk (Linux, Centos, Windows) and storage size);
 
 Step 4: Connect to your VM instance via SSH/RDP with your dynamic External IP, User ID, password;
 
-Step 5: Set up the libraries/packages/software you need;
+Step 5: Set up the libraries/packages/applications you need;
 
 Step 5: Test your code in prompt command window;
 
