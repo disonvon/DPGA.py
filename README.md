@@ -3,22 +3,29 @@ This repository contains the code that produces the numeric section in On the Us
 
 === Dependencies ===
 
+
 Python 3.5
 
+
 mpi4py (Version == 3.0)(Windows):
+
 The mpi4py documentation and installation instructions can be found at:
 
 http://mpi4py.scipy.org/
 
 TensorFlow-gpu (Windows):
+
+
 The TensorFlow-gpu documentation and installation instructions can be found at:
 
 https://www.tensorflow.org/install/install_windows
+
 
 Some other libraries/packages needed are: NumPy, scipy
 
 
 === How to generate multiple processes on a single (multi-core/cpu) host ===
+
 Run it with 
 
 mpirun -np N ./some-program
